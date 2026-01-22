@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Interactive Solar System</title>
+
+<style>
+:root{
+    --bg:#020014;
+    --text:#fff;
+}
+.light{
+    --bg:#eef2ff;
+    --text:#000;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    font-family:Segoe UI,Arial;
+    perspective:1400px;
+    transition:.4s;
+}
+canvas{position:absolute;inset:0;z-index:-1;}
+
+.container{
+    width:40em;height:40em;
+    font-size:10px;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:.2s;
+}
+
+/* ☀ SUN */
+.sun{
+    position:absolute;
+    top:15em;left:15em;
+    width:10em;height:10em;
+    border-radius:50%;
+    background:radial-gradient(circle,#fff6a3,#ff9800,#f57c00);
+    box-shadow:0 0 18em #ffeb3b;
+    animation:pulse 3s infinite alternate;
+}
+@keyframes pulse{to{box-shadow:0 0 28em #ffeb3b;}}
+
+/* ORBITS */
+.orbit{
+    position:absolute;
+    border:1px dashed rgba(255,255,255,.25);
+    border-radius:50%;
+    animation:spin linear infinite;
+}
+
+/* PLANETS */
+.planet{
+    position:absolute;
+    top:.6em;right:.6em;
+    border-radius:50%;
+    cursor:pointer;
+    transition:.3s;
+}
+.planet:hover{transform:scale(1.3);}
+
+/* MERCURY */
+.mercury-orbit{width:14em;height:14em;top:13em;left:13em;animation-duration:7s;}
+.mercury{width:1em;height:1em;background:#9e9e9e;}
+
+/* VENUS */
+.venus-orbit{width:20em;height:20em;top:10em;left:10em;animation-duration:12s;}
+.venus{width:1.6em;height:1.6em;background:#ffca28;}
+
+/* EARTH */
+.earth-orbit{width:28em;height:28em;top:6em;left:6em;animation-duration:18s;}
+.earth{width:2.2em;height:2.2em;background:radial-gradient(circle,#64b5f6,#0d47a1);}
+.moon-orbit{width:6em;height:6em;top:-2em;left:-2em;animation:spin 4s linear infinite;}
+.moon{width:.8em;height:.8em;background:#eee;}
+
+/* MARS */
+.mars-orbit{width:34em;height:34em;top:3em;left:3em;animation-duration:26s;}
+.mars{width:1.8em;height:1.8em;background:#ef5350;}
+
+/* JUPITER */
+.jupiter-orbit{width:40em;height:40em;top:0;left:0;animation-duration:35s;}
+.jupiter{
+    width:3.5em;height:3.5em;
+    background:linear-gradient(#d7ccc8,#bcaaa4);
+}
+
+/* SATURN */
+.saturn-orbit{width:46em;height:46em;top:-3em;left:-3em;animation-duration:45s;}
+.saturn{
+    width:3em;height:3em;
+    background:#ffe082;
+    position:relative;
+}
+.saturn::after{
+    content:'';
+    position:absolute;
+    width:4.6em;height:1.2em;
+    background:rgba(255,255,255,.5);
+    top:50%;left:-.8em;
+    transform:translateY(-50%) rotate(15deg);
+    border-radius:50%;
+}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* MODAL */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+.modal-content{
+    background:#111;
+    color:#fff;
+    padding:1.2em;
+    border-radius:1em;
+    max-width:300px;
+    text-align:center;
+}
+.modal img{
+    width:100%;
+    border-radius:.6em;
+    margin:.6em 0;
+}
+.modal button{
+    margin-top:.6em;
+    padding:.4em .8em;
+    cursor:pointer;
+}
+
+/* CONTROLS */
+.controls{
+    position:fixed;
+    top:1em;right:1em;
+    display:flex;
+    gap:.6em;
+}
+.controls button{
+    padding:.5em .8em;
+    border:none;
+    cursor:pointer;
+    border-radius:.4em;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="controls">
+    <button onclick="toggleTheme()">🌗 Theme</button>
+</div>
+
+<div class="container" id="solar">
+    <div class="sun"></div>
+
+    <div class="orbit mercury-orbit">
+        <div class="planet mercury" onclick="openModal('Mercury','Closest planet to the Sun','https://upload.wikimedia.org/wikipedia/commons/4/4a/Mercury_in_true_color.jpg')"></div>
+    </div>
+
+    <div class="orbit venus-orbit">
+        <div class="planet venus" onclick="openModal('Venus','Hottest planet','https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg')"></div>
+    </div>
+
+    <div class="orbit earth-orbit">
+        <div class="planet earth" onclick="openModal('Earth','Only planet with life','https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg')">
+            <div class="orbit moon-orbit">
+                <div class="planet moon" onclick="openModal('Moon','Earth’s satellite','https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg')"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="orbit mars-orbit">
+        <div class="planet mars" onclick="openModal('Mars','The Red Planet','https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg')"></div>
+    </div>
+
+    <div class="orbit jupiter-orbit">
+        <div class="planet jupiter" onclick="openModal('Jupiter','Largest planet','https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg')"></div>
+    </div>
+
+    <div class="orbit saturn-orbit">
+        <div class="planet saturn" onclick="openModal('Saturn','Planet with rings','https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg')"></div>
+    </div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3 id="mTitle"></h3>
+        <img id="mImg">
+        <p id="mText"></p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+/* STAR BACKGROUND */
+const c=document.getElementById("stars"),x=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+let s=[...Array(300)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5,v:Math.random()+.3}));
+function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    x.fillStyle="white";
+    s.forEach(a=>{
+        x.beginPath();x.arc(a.x,a.y,a.r,0,Math.PI*2);x.fill();
+        a.y+=a.v;if(a.y>c.height)a.y=0;
+    });
+    requestAnimationFrame(draw);
+}
+draw();
+
+/* TILT */
+document.addEventListener("mousemove",e=>{
+    let rx=(e.clientY/innerHeight-.5)*-20;
+    let ry=(e.clientX/innerWidth-.5)*20;
+    solar.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+});
+
+/* MODAL */
+function openModal(t,d,i){
+    modal.style.display="flex";
+    mTitle.innerText=t;
+    mText.innerText=d;
+    mImg.src=i;
+}
+function closeModal(){modal.style.display="none";}
+
+/* THEME */
+function toggleTheme(){document.body.classList.toggle("light");}
+</script>
+
+</body>
+</html>
