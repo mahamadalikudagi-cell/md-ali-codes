@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Exam System</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{
+  height:100vh;
+  background:radial-gradient(circle at top,#1f2933,#020617);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.exam{
+  width:95%;
+  max-width:1000px;
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(0,255,255,.3);
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+.timer{
+  font-size:20px;
+  color:#00fff7;
+}
+.main{
+  display:grid;
+  grid-template-columns:3fr 1fr;
+  gap:20px;
+}
+.question-box{
+  background:rgba(0,0,0,.4);
+  padding:20px;
+  border-radius:15px;
+}
+.options label{
+  display:block;
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+  background:#111;
+  cursor:pointer;
+  transition:.3s;
+}
+.options input{display:none}
+.options input:checked + label{
+  background:#00fff7;
+  color:#000;
+}
+.nav{
+  display:flex;
+  justify-content:space-between;
+  margin-top:15px;
+}
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  background:#00fff7;
+  color:#000;
+  font-weight:bold;
+}
+.palette{
+  background:rgba(0,0,0,.4);
+  padding:15px;
+  border-radius:15px;
+}
+.palette h3{
+  text-align:center;
+  margin-bottom:10px;
+}
+.palette div{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+.palette button{
+  padding:8px;
+  border-radius:50%;
+  background:#222;
+  color:#fff;
+}
+.palette button.answered{
+  background:#00fff7;
+  color:#000;
+}
+.result{
+  text-align:center;
+  font-size:22px;
+}
+.warning{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:red;
+  padding:10px 20px;
+  border-radius:10px;
+  display:none;
+}
+@media(max-width:768px){
+  .main{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="warning" id="warning">⚠ Do not switch tabs!</div>
+
+<div class="exam" id="exam">
+  <div class="header">
+    <h2>Online Exam</h2>
+    <div class="timer" id="timer">05:00</div>
+  </div>
+
+  <div class="main">
+    <div class="question-box">
+      <h3 id="question">Question</h3>
+      <div class="options" id="options"></div>
+
+      <div class="nav">
+        <button onclick="prevQ()">Previous</button>
+        <button onclick="nextQ()">Next</button>
+        <button onclick="submitExam()">Submit</button>
+      </div>
+    </div>
+
+    <div class="palette">
+      <h3>Questions</h3>
+      <div id="palette"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions=[
+ {
+  q:"Which language runs in a web browser?",
+  o:["Java","C","Python","JavaScript"],
+  a:3
+ },
+ {
+  q:"HTML stands for?",
+  o:["Hyper Trainer Marking Language","Hyper Text Markup Language","High Text Markup Language","None"],
+  a:1
+ },
+ {
+  q:"CSS is used for?",
+  o:["Logic","Styling","Database","Server"],
+  a:1
+ },
+ {
+  q:"Which is not a JS framework?",
+  o:["React","Angular","Django","Vue"],
+  a:2
+ },
+ {
+  q:"Which tag is used for JavaScript?",
+  o:["<js>","<script>","<javascript>","<code>"],
+  a:1
+ }
+];
+
+let index=0;
+let answers=new Array(questions.length);
+let time=300; // 5 minutes
+let timer;
+
+const qEl=document.getElementById("question");
+const optEl=document.getElementById("options");
+const palEl=document.getElementById("palette");
+
+/* LOAD QUESTION */
+function loadQ(){
+ qEl.innerText=(index+1)+". "+questions[index].q;
+ optEl.innerHTML="";
+ questions[index].o.forEach((opt,i)=>{
+   optEl.innerHTML+=`
+   <input type="radio" id="o${i}" name="opt" ${answers[index]==i?"checked":""}
+     onclick="save(${i})">
+   <label for="o${i}">${opt}</label>`;
+ });
+ updatePalette();
+}
+
+/* SAVE ANSWER */
+function save(i){
+ answers[index]=i;
+ updatePalette();
+}
+
+/* NAV */
+function nextQ(){ if(index<questions.length-1){index++;loadQ()} }
+function prevQ(){ if(index>0){index--;loadQ()} }
+
+/* PALETTE */
+function updatePalette(){
+ palEl.innerHTML="";
+ questions.forEach((_,i)=>{
+  let btn=document.createElement("button");
+  btn.innerText=i+1;
+  if(answers[i]!=null) btn.classList.add("answered");
+  btn.onclick=()=>{index=i;loadQ()};
+  palEl.appendChild(btn);
+ });
+}
+
+/* TIMER */
+timer=setInterval(()=>{
+ time--;
+ let m=Math.floor(time/60);
+ let s=(time%60).toString().padStart(2,"0");
+ document.getElementById("timer").innerText=`${m}:${s}`;
+ if(time<=0){submitExam()}
+},1000);
+
+/* SUBMIT */
+function submitExam(){
+ clearInterval(timer);
+ let score=0;
+ answers.forEach((a,i)=>{ if(a==questions[i].a) score++; });
+ document.getElementById("exam").innerHTML=
+ `<div class="result">
+   <h2>Exam Submitted</h2>
+   <p>Your Score: ${score} / ${questions.length}</p>
+  </div>`;
+}
+
+/* ANTI CHEAT */
+document.addEventListener("visibilitychange",()=>{
+ if(document.hidden){
+  let w=document.getElementById("warning");
+  w.style.display="block";
+  setTimeout(()=>w.style.display="none",2000);
+ }
+});
+
+/* INIT */
+loadQ();
+</script>
+
+</body>
+</html>
