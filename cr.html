@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cricket Live Score</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+header{
+    text-align:center;
+    padding:20px;
+    font-size:28px;
+    font-weight:bold;
+    background:#00000070;
+}
+.container{
+    padding:20px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+.card{
+    background:#ffffff15;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 0 15px #000;
+    transition:.3s;
+}
+.card:hover{
+    transform:scale(1.05);
+}
+.team{
+    font-size:20px;
+    font-weight:bold;
+}
+.score{
+    font-size:18px;
+    margin-top:10px;
+}
+.status{
+    margin-top:15px;
+    color:#00ffcc;
+    font-weight:bold;
+}
+footer{
+    text-align:center;
+    padding:10px;
+    background:#00000070;
+}
+</style>
+</head>
+
+<body>
+
+<header>🏏 Cricket Live Score</header>
+
+<div class="container" id="matches">
+    <!-- Matches load here -->
+</div>
+
+<footer>Live Cricket Score | HTML CSS JS</footer>
+
+<script>
+// 🔴 DEMO DATA (works without API)
+const demoMatches = [
+  {
+    team1:"India",
+    team2:"Australia",
+    score1:"245/6 (45)",
+    score2:"220/8 (43)",
+    status:"India need 26 runs"
+  },
+  {
+    team1:"England",
+    team2:"Pakistan",
+    score1:"310/7 (50)",
+    score2:"290/9 (49)",
+    status:"England won by 20 runs"
+  }
+];
+
+// Render matches
+function displayMatches(data){
+    const container=document.getElementById("matches");
+    container.innerHTML="";
+    data.forEach(match=>{
+        container.innerHTML+=`
+        <div class="card">
+            <div class="team">${match.team1} vs ${match.team2}</div>
+            <div class="score">${match.team1}: ${match.score1}</div>
+            <div class="score">${match.team2}: ${match.score2}</div>
+            <div class="status">${match.status}</div>
+        </div>
+        `;
+    });
+}
+
+// Load demo data
+displayMatches(demoMatches);
+
+/* 🔴 REAL API FORMAT (OPTIONAL)
+Replace YOUR_API_KEY below
+
+fetch("https://api.cricapi.com/v1/currentMatches?apikey=YOUR_API_KEY&offset=0")
+.then(res=>res.json())
+.then(data=>{
+   // map API data to displayMatches()
+});
+*/
+
+</script>
+
+</body>
+</html>
