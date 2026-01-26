@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hospital Management System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+body{
+  background:#f4f9ff;
+}
+header{
+  background:#0b5ed7;
+  color:white;
+  padding:15px;
+  text-align:center;
+}
+nav{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  background:#084298;
+  padding:10px;
+}
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+nav a:hover{
+  text-decoration:underline;
+}
+.container{
+  padding:20px;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  margin-bottom:20px;
+}
+h2{
+  margin-bottom:10px;
+  color:#0b5ed7;
+}
+input, select, button{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+button{
+  background:#0b5ed7;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+button:hover{
+  background:#084298;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+th, td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:center;
+}
+th{
+  background:#0b5ed7;
+  color:white;
+}
+.hidden{
+  display:none;
+}
+footer{
+  text-align:center;
+  padding:10px;
+  background:#084298;
+  color:white;
+}
+@media(max-width:600px){
+  nav{
+    flex-direction:column;
+    align-items:center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🏥 Hospital Management System</h1>
+  <p>Manage Patients, Doctors & Appointments</p>
+</header>
+
+<nav>
+  <a onclick="showSection('dashboard')">Dashboard</a>
+  <a onclick="showSection('patients')">Patients</a>
+  <a onclick="showSection('appointments')">Appointments</a>
+  <a onclick="showSection('doctors')">Doctors</a>
+</nav>
+
+<div class="container">
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="card">
+    <h2>Dashboard</h2>
+    <p>Total Patients: <b id="totalPatients">0</b></p>
+    <p>Total Appointments: <b id="totalAppointments">0</b></p>
+    <p>Total Doctors: <b>3</b></p>
+  </div>
+
+  <!-- Patient Registration -->
+  <div id="patients" class="card hidden">
+    <h2>Patient Registration</h2>
+    <input type="text" id="pname" placeholder="Patient Name">
+    <input type="number" id="page" placeholder="Age">
+    <select id="pgender">
+      <option value="">Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select>
+    <button onclick="addPatient()">Add Patient</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+        </tr>
+      </thead>
+      <tbody id="patientList"></tbody>
+    </table>
+  </div>
+
+  <!-- Appointment -->
+  <div id="appointments" class="card hidden">
+    <h2>Book Appointment</h2>
+    <input type="text" id="apname" placeholder="Patient Name">
+    <select id="doctor">
+      <option>Dr. Sharma (Cardiology)</option>
+      <option>Dr. Khan (Neurology)</option>
+      <option>Dr. Patel (Orthopedic)</option>
+    </select>
+    <input type="date" id="date">
+    <button onclick="addAppointment()">Book</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Patient</th>
+          <th>Doctor</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentList"></tbody>
+    </table>
+  </div>
+
+  <!-- Doctors -->
+  <div id="doctors" class="card hidden">
+    <h2>Doctor List</h2>
+    <ul>
+      <li>👨‍⚕️ Dr. Sharma – Cardiology</li>
+      <li>👨‍⚕️ Dr. Khan – Neurology</li>
+      <li>👨‍⚕️ Dr. Patel – Orthopedic</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Hospital Management System | Designed by Student
+</footer>
+
+<script>
+let patientCount = 0;
+let appointmentCount = 0;
+
+function showSection(id){
+  document.querySelectorAll('.card').forEach(card=>{
+    card.classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function addPatient(){
+  let name = document.getElementById("pname").value;
+  let age = document.getElementById("page").value;
+  let gender = document.getElementById("pgender").value;
+
+  if(name==="" || age==="" || gender===""){
+    alert("Please fill all patient details");
+    return;
+  }
+
+  let row = `<tr>
+    <td>${name}</td>
+    <td>${age}</td>
+    <td>${gender}</td>
+  </tr>`;
+
+  document.getElementById("patientList").innerHTML += row;
+  patientCount++;
+  document.getElementById("totalPatients").innerText = patientCount;
+
+  document.getElementById("pname").value="";
+  document.getElementById("page").value="";
+  document.getElementById("pgender").value="";
+}
+
+function addAppointment(){
+  let pname = document.getElementById("apname").value;
+  let doctor = document.getElementById("doctor").value;
+  let date = document.getElementById("date").value;
+
+  if(pname==="" || date===""){
+    alert("Please fill all appointment details");
+    return;
+  }
+
+  let row = `<tr>
+    <td>${pname}</td>
+    <td>${doctor}</td>
+    <td>${date}</td>
+  </tr>`;
+
+  document.getElementById("appointmentList").innerHTML += row;
+  appointmentCount++;
+  document.getElementById("totalAppointments").innerText = appointmentCount;
+
+  document.getElementById("apname").value="";
+  document.getElementById("date").value="";
+}
+</script>
+
+</body>
+</html>
